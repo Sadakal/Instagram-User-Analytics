@@ -1,0 +1,149 @@
+1  : Find the 5 oldest users of the Instagram from the database provided
+
+mysql> SELECT username, created_at FROM users ORDER BY created_at ASC LIMIT 5
+    -> ;
++------------------+---------------------+
+| username         | created_at          |
++------------------+---------------------+
+| Darby_Herzog     | 2016-05-06 00:14:21 |
+| Emilio_Bernier52 | 2016-05-06 13:04:30 |
+| Elenor88         | 2016-05-08 01:30:41 |
+| Nicole71         | 2016-05-09 17:30:22 |
+| Jordyn.Jacobson2 | 2016-05-14 07:56:26 |
++------------------+---------------------+
+5 rows in set (0.00 sec)
+
+
+ 2. Find the users who have never posted a single photo on Instagram
+mysql> SELECT username FROM users WHERE id NOT IN (SELECT user_id FROM photos)
+    -> ;
++---------------------+
+| username            |
++---------------------+
+| Aniya_Hackett       |
+| Kasandra_Homenick   |
+| Jaclyn81            |
+| Rocio33             |
+| Maxwell.Halvorson   |
+| Tierra.Trantow      |
+| Pearl7              |
+| Ollie_Ledner37      |
+| Mckenna17           |
+| David.Osinski47     |
+| Morgan.Kassulke     |
+| Linnea59            |
+| Duane60             |
+| Julien_Schmidt      |
+| Mike.Auer39         |
+| Franco_Keebler64    |
+| Nia_Haag            |
+| Hulda.Macejkovic    |
+| Leslie67            |
+| Janelle.Nikolaus81  |
+| Darby_Herzog        |
+| Esther.Zulauf61     |
+| Bartholome.Bernhard |
+| Jessyca_West        |
+| Esmeralda.Mraz57    |
+| Bethany20           |
++---------------------+
+26 rows in set (0.00 sec)
+
+
+3.  Identify the winner of the contest and provide their details to the team
+
+mysql> SELECT users.username, users.id, COUNT(likes.photo_id) AS likes_count
+    -> FROM users
+    -> JOIN photos ON users.id = photos.user_id
+    -> JOIN likes ON photos.id = likes.photo_id
+    -> GROUP BY users.id
+    -> ORDER BY likes_count DESC
+    -> LIMIT 1
+    -> ;
++-----------+----+-------------+
+| username  | id | likes_count |
++-----------+----+-------------+
+| Eveline95 | 23 |         420 |
++-----------+----+-------------+
+1 row in set (0.01 sec)
+
+
+
+4.  Identify and suggest the top 5 most commonly used hashtags on the platform
+
+mysql> SELECT tag_name, COUNT(*) AS count
+    -> FROM tags
+    -> JOIN photo_tags ON tags.id = photo_tags.tag_id
+    -> GROUP BY tag_name
+    -> ORDER BY count DESC
+    -> LIMIT 5
+    -> ;
++----------+-------+
+| tag_name | count |
++----------+-------+
+| smile    |    59 |
+| beach    |    42 |
+| party    |    39 |
+| fun      |    38 |
+| concert  |    24 |
++----------+-------+
+5 rows in set (0.00 sec)
+
+
+5. What day of the week do most users register on? Provide insights on when to schedule an ad campaign
+
+
+mysql> SELECT DATE_FORMAT(created_at, '%W') AS day, COUNT(*) AS count
+    -> FROM users
+    -> GROUP BY day
+    -> ORDER BY count DESC
+    -> LIMIT 1
+    -> ;
++----------+-------+
+| day      | count |
++----------+-------+
+| Thursday |    16 |
++----------+-------+
+1 row in set (0.00 sec)
+
+
+Your Task: Provide how many times does average user posts on Instagram. Also, provide the total number of photos on Instagram/total number of users
+
+mysql> select count(*)/count(distinct user_id) as avg_posts from photos;
++-----------+
+| avg_posts |
++-----------+
+|    3.4730 |
++-----------+
+1 row in set (0.04 sec)
+
+mysql> select count(*) as total_photos ,count(distinct user_id) as total_users from photos;
++--------------+-------------+
+| total_photos | total_users |
++--------------+-------------+
+|          257 |          74 |
++--------------+-------------+
+1 row in set (0.00 sec)
+
+
+ Provide data on users (bots) who have liked every single photo on the site (since any normal user would not be able to do this).
+
+mysql> select user_id from likes group by user_id having count(*) =(select count(*) from photos);
++---------+
+| user_id |
++---------+
+|       5 |
+|      14 |
+|      21 |
+|      24 |
+|      36 |
+|      41 |
+|      54 |
+|      57 |
+|      66 |
+|      71 |
+|      75 |
+|      76 |
+|      91 |
++---------+
+13 rows in set (0.05 sec)
